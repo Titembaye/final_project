@@ -1,10 +1,10 @@
-import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+import streamlit as st
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVR
 from sklearn.metrics import mean_squared_error
+import matplotlib.pyplot as plt
 
 # Charger le fichier CSV
 file_path = 'atomic_data.csv'  # Remplacez par le chemin vers votre fichier CSV
@@ -38,27 +38,32 @@ X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=
 svr_model = SVR(kernel='rbf')
 svr_model.fit(X_train, y_train)
 
-# Faire des prédictions
+# Faire des prédictions pour l'évaluation
 y_pred_svr = svr_model.predict(X_test)
 
 # Évaluer le modèle
 mse_svr = mean_squared_error(y_test, y_pred_svr)
-st.write(f'Erreur quadratique moyenne (SVR): {mse_svr}')
+st.write(f'Erreur quadratique moyenne (SVR): {mse_svr:.2f}')
 
-# Interface utilisateur pour les prédictions
-st.header("Prédiction du chiffre d'affaires")
-year = st.number_input("Entrez l'année:", min_value=2022, max_value=2030, value=2024)
-month = st.number_input("Entrez le mois:", min_value=1, max_value=12, value=5)
+# Interface utilisateur pour les prédictions dynamiques
+st.sidebar.title("Prévision du chiffre d'affaires 🎨")
+st.sidebar.markdown("<span style='color:white'>Prédisez le chiffre d'affaires futur à l'aide de SVM Regressor.</span>", unsafe_allow_html=True)
+st.sidebar.markdown("---")
+
+year = st.sidebar.number_input("Entrez l'année:", min_value=2022, max_value=2030, value=2024)
+month = st.sidebar.number_input("Entrez le mois:", min_value=1, max_value=12, value=5)
 
 # Bouton pour effectuer la prédiction
-if st.button('Prévoir'):
+if st.sidebar.button('Prévoir'):
     # Préparer les données pour la prédiction
     prediction_input = pd.DataFrame({'Year': [year], 'Month': [month]})
     prediction = svr_model.predict(prediction_input)
-    st.write(f'Prévision du chiffre d\'affaires pour {year}-{month:02d}: {prediction[0]}')
+    st.sidebar.markdown(f"<span style='color:white'>Prévision du chiffre d'affaires pour {year}-{month:02d}: {prediction[0]:.2f}</span>", unsafe_allow_html=True)
 
-# Afficher les résultats dans Streamlit
-st.write(f"Chiffre d'affaires total: {data['Revenue'].sum()}")
+# Afficher les résultats et visualisations
+st.sidebar.markdown("---")
+st.sidebar.header("Résultats")
+st.write(f"Chiffre d'affaires total: {data['Revenue'].sum():.2f}")
 st.write("Chiffre d'affaires par produit:")
 st.write(atomic_data.groupby('Product Name')['Total Revenue'].sum().sort_values(ascending=False).head())
 
@@ -85,13 +90,6 @@ st.markdown(
     .stApp {
         background-color: #f0f0f5;
         color: #333;
-    }
-    .stDataFrame, .stTable {
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        padding: 8px;
-        background-color: #fff;
-        color: #000;
     }
     </style>
     """,
