@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import streamlit as st
 from sklearn.model_selection import train_test_split
-from sklearn.svm import SVR
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
 
@@ -34,20 +34,20 @@ target = data['Revenue']
 # Séparer les données en ensembles d'entraînement et de test
 X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.2, random_state=42)
 
-# Entraîner un modèle de Support Vector Regression
-svr_model = SVR(kernel='rbf')
-svr_model.fit(X_train, y_train)
+# Entraîner un modèle de Random Forest
+rf_model = RandomForestRegressor(n_estimators=100, random_state=42)
+rf_model.fit(X_train, y_train)
 
 # Faire des prédictions pour l'évaluation
-y_pred_svr = svr_model.predict(X_test)
+y_pred_rf = rf_model.predict(X_test)
 
 # Évaluer le modèle
-mse_svr = mean_squared_error(y_test, y_pred_svr)
-st.write(f'Erreur quadratique moyenne (SVR): {mse_svr:.2f}')
+mse_rf = mean_squared_error(y_test, y_pred_rf)
+st.write(f'Erreur quadratique moyenne (Random Forest): {mse_rf:.2f}')
 
 # Interface utilisateur pour les prédictions dynamiques
 st.sidebar.title("Prévision du chiffre d'affaires")
-st.sidebar.markdown("<span style='color:white'>Prédisez le chiffre d'affaires futur à l'aide de SVM Regressor.</span>", unsafe_allow_html=True)
+st.sidebar.markdown("<span style='color:white'>Prédisez le chiffre d'affaires futur à l'aide de Random Forest Regressor.</span>", unsafe_allow_html=True)
 st.sidebar.markdown("---")
 
 year = st.sidebar.number_input("Entrez l'année:", min_value=2022, max_value=2030, value=2024)
@@ -57,7 +57,7 @@ month = st.sidebar.number_input("Entrez le mois:", min_value=1, max_value=12, va
 if st.sidebar.button('Prévoir'):
     # Préparer les données pour la prédiction
     prediction_input = pd.DataFrame({'Year': [year], 'Month': [month]})
-    prediction = svr_model.predict(prediction_input)
+    prediction = rf_model.predict(prediction_input)
     st.sidebar.markdown(f"<span style='color:white'>Prévision du chiffre d'affaires pour {year}-{month:02d}: {prediction[0]:.2f}</span>", unsafe_allow_html=True)
 
 # Afficher les résultats et visualisations
@@ -78,7 +78,7 @@ fig, ax = plt.subplots()
 monthly_revenue.plot(kind='line', ax=ax, color='blue')
 ax.set_title('Tendance des ventes au fil du temps', color='darkred')
 ax.set_xlabel('Date', color='darkgreen')
-ax.set_ylabel('Chiffre d\'affaires', color='darkgreen')
+ax.set_ylabel("Chiffre d'affaires", color='darkgreen')
 ax.tick_params(axis='x', colors='purple')
 ax.tick_params(axis='y', colors='purple')
 st.pyplot(fig)
