@@ -46,7 +46,7 @@ mse_svr = mean_squared_error(y_test, y_pred_svr)
 st.write(f'Erreur quadratique moyenne (SVR): {mse_svr:.2f}')
 
 # Interface utilisateur pour les prédictions dynamiques
-st.sidebar.title("Prévision du chiffre d'affaires 🎨")
+st.sidebar.title("Prévision du chiffre d'affaires")
 st.sidebar.markdown("<span style='color:white'>Prédisez le chiffre d'affaires futur à l'aide de SVM Regressor.</span>", unsafe_allow_html=True)
 st.sidebar.markdown("---")
 
